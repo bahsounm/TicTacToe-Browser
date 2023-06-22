@@ -1,6 +1,7 @@
 // Facories 
 
 const player = (name) =>{
+    let score = 0
     let tolken = ""
     const setTolken = (tolk)=>{
         tolken=tolk
@@ -8,7 +9,17 @@ const player = (name) =>{
     const getTolken = ()=> {
         return tolken;
     }
-    return {name,setTolken,getTolken};
+    const updateScore = ()=>{
+        score+=1
+    }
+    const resetScore = ()=>{
+        score = 0
+    }
+    const getScore = ()=>{
+        return score
+    }
+    
+    return {name,setTolken,getTolken,updateScore,resetScore,getScore};
 };
 
 // Modules
@@ -34,7 +45,11 @@ const gameBoard = (() =>{
     // display to the page who the winner is
     const displayResult = (winner)=>{
         let resultLoc = document.querySelector('.winner')
-        resultLoc.textContent = winner + " Wins !!"
+        resultLoc.textContent = winner[0] + " Wins !!"
+        let p1 = document.querySelector('.p1Selection')
+        let p2 = document.querySelector('.p2Selection')
+        p1.textContent = p1.textContent.substring(0, p1.textContent.indexOf(':')+1) + " " + winner[1]
+        p2.textContent = p2.textContent.substring(0, p1.textContent.indexOf(':')+1) + " " + winner[2]
         start();
         stop();
         displayEndGameOptions();
@@ -72,6 +87,7 @@ const gameBoard = (() =>{
         let next = document.querySelector('.nextRound')
 
         restart.addEventListener('click',function(){
+            
 
         })
 
@@ -86,6 +102,7 @@ const gameBoard = (() =>{
         let players = document.querySelector('.players')
         players.textContent = currentTolken + " Turn"
         window.addEventListener('click', function(e){
+            console.log(currentTolken)
             let child = e.srcElement
             if(child.textContent == ''){
                 child.textContent=(currentTolken)
@@ -96,8 +113,10 @@ const gameBoard = (() =>{
                 }
                 gboard[child.id.slice(-1)] = currentTolken
                 let result = game.checkWinner(currentTolken)
-                if(result == 'Player 1' || result == 'Player 2'){
-                    displayResult(result)
+                if(result != undefined){
+                    if(result[0] == 'Player 1' || result[0] == 'Player 2'){
+                        displayResult(result)
+                    }
                 }else{
                     currentTolken = game.switchPlayer()
                     players.textContent = currentTolken + " Turn"
@@ -115,7 +134,6 @@ const game = (() =>{
     let currentPlayer = playerOne
     let winnerFound = false
     let winner = ''
-    let selectionMade = false
     let select = document.querySelector('.select')
 
     const winningSubArrays =[[0,1,2],[3,4,5],[6,7,8],[0,4,8],[2,4,6],[0,3,6],[1,4,7],[2,5,8]]
@@ -128,16 +146,19 @@ const game = (() =>{
                     winnerFound = true
                     winner = playerOne.name
                     setColors(playerOne,sub);
+                    playerOne.updateScore()
                 }else if(playerTwo.getTolken() == tolken){
                     winnerFound = true
                     winner = playerTwo.name
                     console.log(sub)
                     setColors(playerTwo,sub);
+                    playerTwo.updateScore()
+
                 }
             }
         }
         if(winnerFound){
-            return winner
+            return [winner,playerOne.getScore(),playerTwo.getScore()]
         }
     }
 
@@ -171,16 +192,22 @@ const game = (() =>{
     const makeSelection = () =>{
         let X = document.querySelector('.X')
         let O = document.querySelector('.O')
+        let p1 = document.querySelector('.p1Selection')
+        let p2 = document.querySelector('.p2Selection')
 
         X.addEventListener('click', function(){
             playerOne.setTolken("X")
             playerTwo.setTolken("O")
+            p1.textContent = "Player "+ playerOne.getTolken() + " Score: " + playerOne.getScore()
+            p2.textContent = "Player "+ playerTwo.getTolken() + " Score: " + playerTwo.getScore()
             game.playGame()
         })
 
         O.addEventListener('click', function(){
             playerOne.setTolken("O")
             playerTwo.setTolken("X")
+            p1.textContent = "Player "+ playerOne.getTolken() + " Score: " + playerOne.getScore()
+            p2.textContent = "Player "+ playerTwo.getTolken() + " Score: " + playerTwo.getScore()
             game.playGame()
         })
 
