@@ -13,10 +13,11 @@ const gameBoard = (() =>{
     // create all the tiles
     let tiles = document.querySelector('.Tiles')
 
+    let container = document.querySelector('.container')
+
     // use this in order to load the game board up
     const displayGame = () => {
         for(let i = 0; i < gboard.length;i+=1){
-            // gboard[i] = ''
             const tile = document.createElement('div')
             tile.className = 'tile'
             tile.id = "t"+i
@@ -29,6 +30,7 @@ const gameBoard = (() =>{
         resultLoc.textContent = winner + " Wins !!"
         start();
         stop();
+        displayEndGameOptions();
     }
     //start the confetti
     const start = () =>{
@@ -43,18 +45,55 @@ const gameBoard = (() =>{
         },2000)
     }
 
+    const displayEndGameOptions = () =>{
+        let optionContainer = document.querySelector('.optionContainer')
+        //if the user wants to continue 
+        let nextRound = document.createElement('div')
+        nextRound.className = "nextRound"
+        nextRound.textContent = "Next Round"
+        optionContainer.appendChild(nextRound)
+        // if the user wants to restart
+        let restart = document.createElement('div')
+        restart.className = "restart"
+        restart.textContent = "Restart"
+        optionContainer.appendChild(restart)
+        respondToAnswer();
+    }
+
+    const respondToAnswer = () => {
+        let restart = document.querySelector('.restart')
+        let next = document.querySelector('.nextRound')
+
+        restart.addEventListener('click',function(){
+
+        })
+
+        next.addEventListener('click',function(){
+            
+        })
+        
+    }
+
     // this will be used to place the current players tolken there
     const placeTolken = (currentTolken) =>{
+        let players = document.querySelector('.players')
+        players.textContent = currentTolken + " Turn"
         window.addEventListener('click', function(e){
             let child = e.srcElement
             if(child.textContent == ''){
                 child.textContent=(currentTolken)
+                if(currentTolken == 'X'){
+                    child.style.color = "#34C3BE"
+                }else{
+                    child.style.color = "#F2B138"
+                }
                 gboard[child.id.slice(-1)] = currentTolken
                 let result = game.checkWinner(currentTolken)
                 if(result == 'Player 1' || result == 'Player 2'){
                     displayResult(result)
                 }else{
                     currentTolken = game.switchPlayer()
+                    players.textContent = currentTolken + " Turn"
                 }
             }
         })
@@ -81,15 +120,36 @@ const game = (() =>{
                 if(playerOne.tolken == tolken){
                     winnerFound = true
                     winner = playerOne.name
+                    setColors(playerOne,sub);
                 }else if(playerTwo.tolken == tolken){
                     winnerFound = true
                     winner = playerTwo.name
+                    console.log(sub)
+                    setColors(playerTwo,sub);
                 }
             }
         }
         if(winnerFound){
             return winner
         }
+    }
+
+    const setColors = (p,sub) =>{
+        if(p.tolken == 'X'){
+            col = "#34C3BE"
+        }else if(p.tolken == 'O'){
+            col = "#F2B138"
+        }
+        let tile1 = document.getElementById('t'+sub[0])
+        let tile2 = document.getElementById('t'+sub[1])
+        let tile3 = document.getElementById('t'+sub[2])
+        tile1.style.backgroundColor = col
+        tile1.style.color = "black"
+        tile2.style.backgroundColor = col
+        tile2.style.color = "black"
+        tile3.style.backgroundColor = col
+        tile3.style.color = "black"
+        return
     }
 
     const switchPlayer = () =>{
