@@ -1,7 +1,14 @@
 // Facories 
 
-const player = (name,tolken) =>{
-    return {name, tolken};
+const player = (name) =>{
+    let tolken = ""
+    const setTolken = (tolk)=>{
+        tolken=tolk
+    };
+    const getTolken = ()=> {
+        return tolken;
+    }
+    return {name,setTolken,getTolken};
 };
 
 // Modules
@@ -103,13 +110,13 @@ const gameBoard = (() =>{
 })();
 
 const game = (() =>{
-
-    const playerOne = player('Player 1','X')
-    const playerTwo = player('Player 2','O')
-
+    const playerOne = player('Player 1')
+    const playerTwo = player('Player 2')
     let currentPlayer = playerOne
     let winnerFound = false
     let winner = ''
+    let selectionMade = false
+    let select = document.querySelector('.select')
 
     const winningSubArrays =[[0,1,2],[3,4,5],[6,7,8],[0,4,8],[2,4,6],[0,3,6],[1,4,7],[2,5,8]]
 
@@ -117,11 +124,11 @@ const game = (() =>{
         for(let i = 0; i < winningSubArrays.length;i+=1){
             let sub = winningSubArrays[i]
             if(gameBoard.gboard[sub[0]] == tolken && gameBoard.gboard[sub[1]] == tolken && gameBoard.gboard[sub[2]] == tolken){
-                if(playerOne.tolken == tolken){
+                if(playerOne.getTolken() == tolken){
                     winnerFound = true
                     winner = playerOne.name
                     setColors(playerOne,sub);
-                }else if(playerTwo.tolken == tolken){
+                }else if(playerTwo.getTolken() == tolken){
                     winnerFound = true
                     winner = playerTwo.name
                     console.log(sub)
@@ -135,9 +142,9 @@ const game = (() =>{
     }
 
     const setColors = (p,sub) =>{
-        if(p.tolken == 'X'){
+        if(p.getTolken() == 'X'){
             col = "#34C3BE"
-        }else if(p.tolken == 'O'){
+        }else if(p.getTolken() == 'O'){
             col = "#F2B138"
         }
         let tile1 = document.getElementById('t'+sub[0])
@@ -158,19 +165,37 @@ const game = (() =>{
         }else if(currentPlayer == playerTwo){
             currentPlayer = playerOne;
         }
-        return currentPlayer.tolken
+        return currentPlayer.getTolken()
+    }
+
+    const makeSelection = () =>{
+        let X = document.querySelector('.X')
+        let O = document.querySelector('.O')
+
+        X.addEventListener('click', function(){
+            playerOne.setTolken("X")
+            playerTwo.setTolken("O")
+            game.playGame()
+        })
+
+        O.addEventListener('click', function(){
+            playerOne.setTolken("O")
+            playerTwo.setTolken("X")
+            game.playGame()
+        })
+
     }
     
     const playGame = () =>{
+        select.style.display = 'none'
         gameBoard.displayGame();
-        gameBoard.placeTolken(currentPlayer.tolken);
+        gameBoard.placeTolken(currentPlayer.getTolken());
     }
 
-    return{playGame,checkWinner,switchPlayer}
+    return{playGame,checkWinner,switchPlayer,makeSelection}
 
 })();
-
-game.playGame()
+game.makeSelection()
 
 
 
