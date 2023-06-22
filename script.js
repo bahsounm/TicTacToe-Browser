@@ -35,6 +35,9 @@ const gameBoard = (() =>{
 
     // use this in order to load the game board up
     const displayGame = () => {
+        tiles.innerHTML = ''
+        let p = document.querySelector('.players')
+        p.style.display = 'block'
         for(let i = 0; i < gboard.length;i+=1){
             const tile = document.createElement('div')
             tile.className = 'tile'
@@ -82,17 +85,30 @@ const gameBoard = (() =>{
         respondToAnswer();
     }
 
+    const resetArray = () =>{
+        for(let i = 0; i < gboard.length;i+=1){
+            gboard[i] = ''
+        }
+    }
+
     const respondToAnswer = () => {
         let restart = document.querySelector('.restart')
         let next = document.querySelector('.nextRound')
+        let resultLoc = document.querySelector('.winner')
+        let option = document.querySelector('.optionContainer')
+        let select = document.querySelector('.select')
 
         restart.addEventListener('click',function(){
-            
-
+            location.reload()
         })
 
         next.addEventListener('click',function(){
-            
+            resultLoc.textContent = ""
+            option.innerHTML = '';
+            resetArray()
+            game.setWinnerFound(false)
+            displayGame();
+
         })
         
     }
@@ -101,25 +117,33 @@ const gameBoard = (() =>{
     const placeTolken = (currentTolken) =>{
         let players = document.querySelector('.players')
         players.textContent = currentTolken + " Turn"
+
+
         window.addEventListener('click', function(e){
-            console.log(currentTolken)
-            let child = e.srcElement
-            if(child.textContent == ''){
-                child.textContent=(currentTolken)
-                if(currentTolken == 'X'){
-                    child.style.color = "#34C3BE"
-                }else{
-                    child.style.color = "#F2B138"
-                }
-                gboard[child.id.slice(-1)] = currentTolken
-                let result = game.checkWinner(currentTolken)
-                if(result != undefined){
-                    if(result[0] == 'Player 1' || result[0] == 'Player 2'){
-                        displayResult(result)
+            if(!game.getWinnerFound()){
+                let child = e.srcElement
+                console.log("Hello")
+
+                if(child.textContent == ''){
+                    child.textContent=(currentTolken)
+
+                    if(currentTolken == 'X'){
+                        child.style.color = "#34C3BE"
+                    }else{
+                        child.style.color = "#F2B138"
                     }
-                }else{
-                    currentTolken = game.switchPlayer()
-                    players.textContent = currentTolken + " Turn"
+
+                    gboard[child.id.slice(-1)] = currentTolken
+                    let result = game.checkWinner(currentTolken)
+
+                    if(result != undefined){
+                        if(result[0] == 'Player 1' || result[0] == 'Player 2'){
+                            displayResult(result)
+                        }
+                    }else{
+                        currentTolken = game.switchPlayer()
+                        players.textContent = currentTolken + " Turn"
+                    }
                 }
             }
         })
@@ -129,8 +153,8 @@ const gameBoard = (() =>{
 })();
 
 const game = (() =>{
-    const playerOne = player('Player 1')
-    const playerTwo = player('Player 2')
+    let playerOne = player('Player 1')
+    let playerTwo = player('Player 2')
     let currentPlayer = playerOne
     let winnerFound = false
     let winner = ''
@@ -138,19 +162,26 @@ const game = (() =>{
 
     const winningSubArrays =[[0,1,2],[3,4,5],[6,7,8],[0,4,8],[2,4,6],[0,3,6],[1,4,7],[2,5,8]]
 
+    const setWinnerFound = (val) =>{
+        winnerFound = val
+    }
+
+    const getWinnerFound = () =>{
+        return winnerFound
+    }
+
     const checkWinner = (tolken) =>{
         for(let i = 0; i < winningSubArrays.length;i+=1){
             let sub = winningSubArrays[i]
             if(gameBoard.gboard[sub[0]] == tolken && gameBoard.gboard[sub[1]] == tolken && gameBoard.gboard[sub[2]] == tolken){
                 if(playerOne.getTolken() == tolken){
-                    winnerFound = true
+                    setWinnerFound(true)
                     winner = playerOne.name
                     setColors(playerOne,sub);
                     playerOne.updateScore()
                 }else if(playerTwo.getTolken() == tolken){
-                    winnerFound = true
+                    setWinnerFound(true)
                     winner = playerTwo.name
-                    console.log(sub)
                     setColors(playerTwo,sub);
                     playerTwo.updateScore()
 
@@ -194,6 +225,10 @@ const game = (() =>{
         let O = document.querySelector('.O')
         let p1 = document.querySelector('.p1Selection')
         let p2 = document.querySelector('.p2Selection')
+        let p = document.querySelector('.players')
+        p1.textContent = ''
+        p2.textContent = ''
+        p.style.display = 'none'
 
         X.addEventListener('click', function(){
             playerOne.setTolken("X")
@@ -215,11 +250,13 @@ const game = (() =>{
     
     const playGame = () =>{
         select.style.display = 'none'
+        playerOne.resetScore()
+        playerTwo.resetScore()
         gameBoard.displayGame();
         gameBoard.placeTolken(currentPlayer.getTolken());
     }
 
-    return{playGame,checkWinner,switchPlayer,makeSelection}
+    return{playGame,checkWinner,switchPlayer,makeSelection,getWinnerFound,setWinnerFound}
 
 })();
 game.makeSelection()

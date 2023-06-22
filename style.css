@@ -8,6 +8,7 @@ body{
     align-items: center;
 }
 .header{
+    margin-top: 10px;
     display: flex;
     justify-content: space-evenly;
     gap: 200px;
