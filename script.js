@@ -1,7 +1,7 @@
 // Facories 
 
 const player = (name,tolken) =>{
-    return {name, tolken,playTurn};
+    return {name, tolken};
 };
 
 // Modules
@@ -46,7 +46,7 @@ const gameBoard = (() =>{
     // this will be used to place the current players tolken there
     const placeTolken = (currentTolken) =>{
         window.addEventListener('click', function(e){
-            child = e.srcElement
+            let child = e.srcElement
             if(child.textContent == ''){
                 child.textContent=(currentTolken)
                 gboard[child.id.slice(-1)] = currentTolken
@@ -54,13 +54,11 @@ const gameBoard = (() =>{
                 if(result == 'Player 1' || result == 'Player 2'){
                     displayResult(result)
                 }else{
-                    game.switchPlayer()
-                    console.log(game.currentPlayer)
+                    currentTolken = game.switchPlayer()
                 }
             }
         })
     }
-
     return {gboard,displayGame,placeTolken}
 
 })();
@@ -94,26 +92,25 @@ const game = (() =>{
         }
     }
 
-    // const switchPlayer = ()=>{
-    //     if(currentPlayer == playerOne){
-    //         currentPlayer = playerTwo
-
-    //     }else if(currentPlayer == playerTwo){
-    //         currentPlayer = playerOne
-    //     }
-    // }
+    const switchPlayer = () =>{
+        if(currentPlayer == playerOne){
+            currentPlayer = playerTwo;
+        }else if(currentPlayer == playerTwo){
+            currentPlayer = playerOne;
+        }
+        return currentPlayer.tolken
+    }
     
     const playGame = () =>{
         gameBoard.displayGame();
+        gameBoard.placeTolken(currentPlayer.tolken);
     }
 
-    return{playGame,checkWinner,switchPlayer,currentPlayer}
+    return{playGame,checkWinner,switchPlayer}
 
 })();
 
 game.playGame()
-
-// Need to fix switching between players
 
 
 
