@@ -1,7 +1,7 @@
 // Facories 
 
 const player = (name,tolken) =>{
-    return {name, tolken};
+    return {name, tolken,playTurn};
 };
 
 // Modules
@@ -45,23 +45,21 @@ const gameBoard = (() =>{
 
     // this will be used to place the current players tolken there
     const placeTolken = (currentTolken) =>{
-        tiles.childNodes.forEach(function(child){
-            child.addEventListener('click', function(){
-                if(child.textContent == ''){
-                    child.textContent=(currentTolken)
-                    gboard[child.id.slice(-1)] = currentTolken
-                    // if(game.currentPlayer == player)
-
-                    let result = game.checkWinner(currentTolken)
-                    if(result == 'Player 1' || result == 'Player 2'){
-                        displayResult(result)
-                    }
+        window.addEventListener('click', function(e){
+            child = e.srcElement
+            if(child.textContent == ''){
+                child.textContent=(currentTolken)
+                gboard[child.id.slice(-1)] = currentTolken
+                let result = game.checkWinner(currentTolken)
+                if(result == 'Player 1' || result == 'Player 2'){
+                    displayResult(result)
+                }else{
+                    game.switchPlayer()
+                    console.log(game.currentPlayer)
                 }
-            })
+            }
         })
     }
-
-
 
     return {gboard,displayGame,placeTolken}
 
@@ -74,7 +72,6 @@ const game = (() =>{
 
     let currentPlayer = playerOne
     let winnerFound = false
-    let tileLeft = 9
     let winner = ''
 
     const winningSubArrays =[[0,1,2],[3,4,5],[6,7,8],[0,4,8],[2,4,6],[0,3,6],[1,4,7],[2,5,8]]
@@ -96,19 +93,27 @@ const game = (() =>{
             return winner
         }
     }
+
+    // const switchPlayer = ()=>{
+    //     if(currentPlayer == playerOne){
+    //         currentPlayer = playerTwo
+
+    //     }else if(currentPlayer == playerTwo){
+    //         currentPlayer = playerOne
+    //     }
+    // }
     
     const playGame = () =>{
-        gameBoard.displayGame();          
-        gameBoard.placeTolken(currentPlayer.tolken);
+        gameBoard.displayGame();
     }
 
-    return{playGame,checkWinner}
+    return{playGame,checkWinner,switchPlayer,currentPlayer}
 
 })();
 
 game.playGame()
 
-
+// Need to fix switching between players
 
 
 
