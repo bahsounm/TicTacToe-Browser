@@ -1,4 +1,4 @@
-Tic Tac Toe Vs CPU
+# Tic Tac Toe Vs CPU
 
 One of the mini projects i did while learning how to use HTML CSS and JS
 
